@@ -1,12 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import { Router, Route, IndexRoute, browserHistory } from 'react-router';
+import reduxThunk from 'redux-thunk';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import reducers from './reducers';
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+import promise from 'redux-promise';
+
+import routes from './routes';
+
+import Async from './components/middlewares/async'
+
+//oauth2 package
+import hello from 'hellojs';
+
+//material-ui provider
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+
+const createStoreWithMiddleware = applyMiddleware(Async, reduxThunk, promise)(createStore);
+const store = createStoreWithMiddleware(reducers);
+
+
+
+ReactDOM.render(
+  <Provider store={store}>
+    <MuiThemeProvider>
+      <Router history={browserHistory} routes={routes} />
+    </MuiThemeProvider>
+  </Provider>
+  , document.querySelector('.container'));
+
